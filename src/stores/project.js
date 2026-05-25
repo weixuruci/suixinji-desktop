@@ -16,28 +16,39 @@ export const useProjectStore = defineStore('project', () => {
 
   // ---------- actions ----------
   async function loadProjects() {
-    // 优先从 Electron IPC（JSON 文件）读取，fallback 到 localStorage
+    // 优先从 Electron IPC（JSON 文件）读取
     if (window.electronAPI?.projectsList) {
       try {
         const list = await window.electronAPI.projectsList()
-        if (list && list.length > 0) {
-          projects.value = list
-          return
-        }
+        if (list && list.length > 0) { projects.value = list; return }
       } catch (e) { console.warn('IPC load failed, fallback to localStorage', e) }
     }
+    // localStorage 兜底：按项目分 key 读取
+    try {
+      const index = JSON.parse(localStorage.getItem('suixinji_projects_index') || '[]')
+      const loaded = []
+      for (const id of index) {
+        const raw = localStorage.getItem('suixinji_proj_' + id)
+        if (raw) loaded.push(JSON.parse(raw))
+      }
+      if (loaded.length > 0) { projects.value = loaded; return }
+    } catch {}
+    // 最后的兜底：旧的单 key 格式
     const saved = localStorage.getItem('suixinji_projects')
-    if (saved) {
-      try { projects.value = JSON.parse(saved) } catch {}
-    }
+    if (saved) { try { projects.value = JSON.parse(saved) } catch {} }
   }
 
   async function saveProjects() {
-    // 只通过 IPC 逐项目保存，不用 localStorage（避免多项目数据混淆）
-    if (window.electronAPI?.projectSave) {
-      for (const proj of projects.value) {
-        try { await window.electronAPI.projectSave(proj) } catch (e) { console.warn('IPC save failed', e) }
-      }
+    // IPC 逐项目保存为主，localStorage 兜底（断电/崩溃不丢数据）
+    const saved = {}
+    for (const proj of projects.value) {
+      try { if (window.electronAPI?.projectSave) await window.electronAPI.projectSave(proj) } catch (e) { console.warn('IPC save failed', e) }
+      saved[proj.id] = proj
+    }
+    // localStorage 兜底：按项目分 key，避免多项目合并混淆
+    localStorage.setItem('suixinji_projects_index', JSON.stringify(Object.keys(saved)))
+    for (const [id, proj] of Object.entries(saved)) {
+      try { localStorage.setItem('suixinji_proj_' + id, JSON.stringify(proj)) } catch {}
     }
   }
 
