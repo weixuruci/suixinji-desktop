@@ -1,0 +1,48 @@
+{
+  "name": "suixinji-desktop",
+  "private": true,
+  "version": "0.0.0",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite --port 5173 & electron .",
+    "pack": "vite build && electron-builder --win portable"
+  },
+  "dependencies": {
+    "echarts": "^6.1.0",
+    "hpagent": "^1.2.0",
+    "marked": "^18.0.4",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.34",
+    "vue-echarts": "^8.0.1",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.6",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.13.3",
+    "vite": "^8.0.12"
+  },
+  "build": {
+    "appId": "com.suixinji.desktop",
+    "productName": "随心记",
+    "directories": { "output": "release" },
+    "win": {
+      "target": "portable",
+      "icon": "electron/icon.png",
+      "sign": null,
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+release/
+.vite/
+*.exe
+.DS_Store
+Thumbs.db
