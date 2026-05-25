@@ -30,10 +30,17 @@ const props = defineProps({
 
 const emit = defineEmits(['action', 'close'])
 
-const menuStyle = computed(() => ({
-  left: `${props.x}px`,
-  top: `${props.y}px`
-}))
+const menuStyle = computed(() => {
+  const menuHeight = 40 * props.items.length + (props.title ? 44 : 12) + 12
+  const winH = window.innerHeight
+  const winW = window.innerWidth
+  const menuW = 180
+  let top = props.y
+  let left = props.x
+  if (top + menuHeight > winH) top = Math.max(0, props.y - menuHeight)
+  if (left + menuW > winW) left = Math.max(0, props.x - menuW)
+  return { left: `${left}px`, top: `${top}px` }
+})
 
 function onClick(item) {
   emit('action', item.action)

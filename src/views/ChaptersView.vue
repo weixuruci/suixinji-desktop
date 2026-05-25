@@ -36,6 +36,7 @@
             <span :class="activeChapter.analyzed ? 'ok' : 'warn'">
               {{ activeChapter.analyzed ? '✓ 已分析' : '⚠ 未分析' }}
             </span>
+            <button class="btn-copy" @click="copyChapter" title="复制全文">📋 复制</button>
           </span>
         </div>
         <div class="reader-body" v-html="renderContent(activeChapter.content || '(无内容)')"></div>
@@ -315,6 +316,21 @@ function renderContent(text) {
   return text.split('\n').map(l => { const t=l.trim(); return t ? `<p>${t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>` : '<br>' }).join('\n')
 }
 
+async function copyChapter() {
+  if (!activeChapter.value?.content) return
+  try {
+    await navigator.clipboard.writeText(activeChapter.value.content)
+  } catch {
+    // fallback for older environments
+    const ta = document.createElement('textarea')
+    ta.value = activeChapter.value.content
+    ta.style.position = 'fixed'; ta.style.left = '-9999px'
+    document.body.appendChild(ta)
+    ta.select(); document.execCommand('copy')
+    document.body.removeChild(ta)
+  }
+}
+
 function onGlobalClick() { closeContextMenu() }
 onMounted(() => document.addEventListener('click', onGlobalClick))
 onUnmounted(() => document.removeEventListener('click', onGlobalClick))
@@ -345,6 +361,12 @@ onUnmounted(() => document.removeEventListener('click', onGlobalClick))
 .reader-meta { font-size:var(--font-size-xs); color:var(--text-muted); }
 .reader-meta .ok { color:var(--success); }
 .reader-meta .warn { color:var(--warning); }
+.btn-copy {
+  margin-left: 8px; padding: 3px 10px; font-size: var(--font-size-xs);
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-secondary); cursor: pointer;
+}
+.btn-copy:hover { border-color: var(--accent); color: var(--accent); }
 .reader-body { flex:1; padding:24px 28px; line-height:2; font-size:15px; color:var(--text-primary); overflow-y:auto; }
 .reader-body :deep(p) { margin:0 0 12px; text-indent:2em; }
 
