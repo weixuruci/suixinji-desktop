@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="dialog-overlay" @click.self="cancel">
+  <div v-if="visible" class="dialog-overlay" @click.self="cancel">
     <div class="dialog">
       <h3>{{ title }}</h3>
       <p class="dialog-desc" v-if="message">{{ message }}</p>
@@ -14,6 +14,8 @@
 </template>
 
 <script setup>
+import { ref, watch } from 'vue'
+
 const props = defineProps({
   show: { type: Boolean, default: false },
   title: { type: String, default: '确认操作' },
@@ -25,14 +27,20 @@ const props = defineProps({
 
 const emit = defineEmits(['ok', 'cancel', 'update:show'])
 
+const visible = ref(false)
+
+watch(() => props.show, v => { visible.value = v })
+
 function ok() {
-  emit('ok')
+  visible.value = false
   emit('update:show', false)
+  emit('ok')
 }
 
 function cancel() {
-  emit('cancel')
+  visible.value = false
   emit('update:show', false)
+  emit('cancel')
 }
 </script>
 

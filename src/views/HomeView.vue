@@ -117,7 +117,7 @@
 
     <!-- 确认弹窗组件 -->
     <ConfirmDialog
-      :show="confirmDialog.show"
+      v-model:show="confirmDialog.show"
       :title="confirmDialog.title"
       :message="confirmDialog.message"
       :danger="confirmDialog.danger"

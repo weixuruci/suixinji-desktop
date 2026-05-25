@@ -301,6 +301,8 @@ function clearAllData() {
   confirmDialog.onOk = () => { localStorage.clear(); location.reload() }
   confirmDialog.show = true
 }
+
+// ====== 云同步相关函数已移除 ======
 </script>
 
 <style scoped>
@@ -460,4 +462,13 @@ function clearAllData() {
   gap: 8px;
   flex-wrap: wrap;
 }
+
+.cloud-project-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  margin-bottom: 6px;
+}
+.cloud-project-name { flex: 1; font-size: var(--font-size-sm); color: var(--text-primary); }
+.cloud-project-ver { font-size: var(--font-size-xs); color: var(--text-muted); }
 </style>
