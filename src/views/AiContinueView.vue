@@ -34,6 +34,17 @@
             <input type="number" v-model.number="chaptersToGenerate" min="1" max="50"
               class="cv-num-input" :disabled="isGenerating" />
           </div>
+          <div class="cv-settings-row">
+            <label class="cv-label">字数限制</label>
+            <select v-model.number="maxWords" class="cv-select" :disabled="isGenerating">
+              <option :value="1000">1000字</option>
+              <option :value="2000">2000字</option>
+              <option :value="3000">3000字</option>
+              <option :value="4000">4000字</option>
+              <option :value="6000">6000字</option>
+              <option :value="8000">8000字</option>
+            </select>
+          </div>
           <label class="cv-toggle">
             <input type="checkbox" v-model="autoContinue" :disabled="isGenerating" />
             <span class="cv-toggle-label">🔄 自动续写到完结</span>
@@ -145,6 +156,7 @@ const settingsStore = useSettingsStore()
 const direction = ref('')
 const autoContinue = ref(false)
 const chaptersToGenerate = ref(1)
+const maxWords = ref(3000)
 const isGenerating = ref(false)
 const stopRequested = ref(false)
 const currentChapter = ref(null)
@@ -208,6 +220,7 @@ async function generateOne() {
   const context = buildContext()
   const num = nextChapterNum.value
   let dirText = direction.value ? `\n续写方向：${direction.value}` : ''
+  dirText += `\n字数要求：约${maxWords.value}字`
 
   const messages = [
     { role: 'system', content: CONTINUE_WRITING_PROMPT },
@@ -543,6 +556,11 @@ function renderContent(text) {
 .cv-label { font-size:var(--font-size-sm); color:var(--text-secondary); white-space:nowrap; }
 .cv-num-input {
   width:60px; padding:4px 8px; font-size:var(--font-size-sm); text-align:center;
+  background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md);
+  color:var(--text-primary); font-family:inherit;
+}
+.cv-select {
+  padding:4px 8px; font-size:var(--font-size-sm);
   background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md);
   color:var(--text-primary); font-family:inherit;
 }
